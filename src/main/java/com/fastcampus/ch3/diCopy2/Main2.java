@@ -1,6 +1,8 @@
-package com.fastcampus.ch3.diCopy1;
+package com.fastcampus.ch3.diCopy2;
 
 import java.io.FileReader;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 class Car {}
@@ -8,7 +10,21 @@ class SportsCar extends Car{}
 class Truck extends Car {}
 class Engine {}
 
-public class Main1 {
+class AppContext{
+    Map map ; //　객체저장소
+
+    AppContext() {
+        map = new HashMap();
+        map.put("car", new SportsCar());
+        map.put("Engine", new Engine());
+    }
+
+    Object getBean(String key) {
+        return map.get(key);
+    }
+}
+
+public class Main2 {
     public static void main(String[] args) throws Exception {
         Car car = (Car)getObject("car");
         Engine engine = (Engine) getObject("engine");

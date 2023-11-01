@@ -2,9 +2,11 @@ package com.fastcampus.ch3.diCopy4;
 
 import com.google.common.reflect.ClassPath;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ImportResource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.io.FileReader;
 import java.lang.reflect.Field;
 import java.util.HashMap;
@@ -13,10 +15,10 @@ import java.util.Properties;
 import java.util.Set;
 
 @Component class Car {
-    @Autowired
+    @Resource
     Engine engine;
 
-    @Autowired
+    @Resource
     Door door;
 
     @Override
@@ -39,6 +41,22 @@ class AppContext{
         map = new HashMap();
         doComponentScan();
         doAutowired();
+        doResource();
+    }
+
+    private void doResource() {
+        // map에 저장된 객체의 iv 중에 @Resource가 붙어 있으면
+        // map에서 iv의 이름에 맞는 객체를 찾아서 연결(객체의 주소를 iv저장)
+        try {
+            for(Object bean : map.values()) {
+                for(Field fld : bean.getClass().getDeclaredFields()) {
+                    if(fld.getAnnotation(Resource.class)!=null) // byName
+                        fld.set(bean, getBean(fld.getName())); // car.engine = obj;
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     private void doAutowired() {

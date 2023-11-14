@@ -1,5 +1,7 @@
 package com.fastcampus.ch3.aop;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import java.lang.reflect.Method;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +20,7 @@ public class AopMain {
     }
 }
 
-class MyAdvice {
+class MyAdvice { // 부가기능
     Pattern p = Pattern.compile("a.*");
 
     boolean matches(Method m) {
@@ -26,16 +28,18 @@ class MyAdvice {
         return matcher.matches();
     }
     void invoke(Method m, Object obj, Object... args) throws Exception {
-        if(matches(m))
+        if(m.getAnnotation(Transactional.class)!=null)
             System.out.println("[before]{");
+        
         m.invoke(obj, args); // aaa(), aaa2(), bbb() 호출가능
 
-        if(matches(m))
+        if(m.getAnnotation(Transactional.class)!=null)
             System.out.println("}[after]");
     }
 }
 
-class MyClass {
+class MyClass { // 핵심기능
+    @Transactional
     void aaa() {
         System.out.println("aaa() is called.");
     }
@@ -47,3 +51,7 @@ class MyClass {
     }
 
 }
+
+// AOP란?
+// 부가기능 (advice)을 동적(실행중에)으로 추가해주는 기술
+// 메서드의 시작 또는 끝에 자동으로 코드(advice)를 추가
